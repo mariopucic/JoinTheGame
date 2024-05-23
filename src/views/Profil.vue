@@ -39,7 +39,17 @@
 export default {
     data() {
         return {
-            
+            name: '',
+            game: '',
+            level: '',
+            description: '',
+            picture: null
+        }
+    },
+    methods: {
+        onFileChange(event) {
+            const file = event.target.files[0]
+            this.picture = file;
         }
     }
 }
@@ -47,5 +57,33 @@ export default {
 </script>
 
 <style>
-
+.container {
+    padding: 20px;
+    display: block;
+}
+.profile-edit{
+    max-width: 200px;
+    margin: auto;
+    text-align: center;
+}
+.picture-upload{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.file-input{
+    display: none;
+}
+.picture-label {
+    display: inline-block;
+    padding: 50px;
+    border: 2px solid #bbbbbb;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.picture-label i {
+    margin-right: 8px;
+}
+.btn-full-width {
+    width: 100px;
+}
 </style>
