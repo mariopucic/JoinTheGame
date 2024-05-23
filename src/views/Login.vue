@@ -17,8 +17,13 @@
       background-color: #f4f4f9;
     }
 
-    .center {
+    .container {
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
 
     .logo {
@@ -104,44 +109,59 @@
 </head>
 <body>
 
-<div class="center">
-    <img src="Logo/Logo.png" alt="Logo" class="logo">
-</div>
-
-<header>
-  <h1>Dobro došli</h1>
-</header>
-
-<form>
-  <div class="center">
-    <div class="form-group">
-      <label for="inputEmail">Email</label>
-      <input type="email" class="form-control" id="inputEmail" placeholder="Email">
+<div class="container centered">
+    <div class="text-center mb-4">
+      <img src="@/assets/logo.png" alt="Sports" class="logo">
     </div>
-    <div class="form-group">
-      <label for="inputPassword">Šifra</label>
-      <input type="password" class="form-control" id="inputPassword" placeholder="Šifra">
+    <h2>Dobro došli</h2>
+    <form @submit.prevent="register" class="form-container">
+      <div class="form-group">
+        <label for="inputName">Ime</label>
+        <input type="text" v-model="name" class="form-control" id="inputName" placeholder="Ime" required>
+      </div>
+      <div class="form-group">
+        <label for="inputEmail">Email</label>
+        <input type="email" v-model="email" class="form-control" id="inputEmail" placeholder="Email" required>
+      </div>
+      <div class="form-group">
+        <label for="inputPassword">Šifra</label>
+        <input type="password" v-model="password" class="form-control" id="inputPassword" placeholder="Šifra" required>
+      </div>
+      <button type="submit" class="btn btn-success btn-full-width">Registracija</button>
+    </form>
+    <p class="mt-3">Imaš račun? <router-link to="/login" class="text-danger">Prijava</router-link></p>
+    <div class="icon-container">
+      <button @click="loginWithGoogle" class="btn btn-outline-danger btn-icon">
+        <i class="fab fa-google"></i>
+      </button>
     </div>
-    <button class="forgot-password">Zaboravljena šifra?</button>
   </div>
-</form>
 
-<div class="center gray-text">
-  Nisi još registriran?
-</div>
-
-<div class="center">
-  <button class="black-button">Registracija</button>
-</div>
-
-<div class="center">
-  <button class="gmail-button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-      <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/>
-    </svg>
-    Gmail prijava
-  </button>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script>
+  new Vue({
+    el: '.container',
+    data() {
+      return {
+        name: '',
+        email: '',
+        password: ''
+      };
+    },
+    methods: {
+      register() {
+        // Simulacija registracije
+        console.log(`User registered with name: ${this.name}, email: ${this.email}`);
+        // this.$router.push('/profile');
+      },
+      loginWithGoogle() {
+        // Simulacija Google prijave
+        console.log('User logged in with Google');
+        // this.$router.push('/profile');
+      }
+    }
+  });
+</script>
 
 </body>
 </html>
