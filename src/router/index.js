@@ -3,6 +3,9 @@ import VueRouter from 'vue-router'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Profil from '../views/Profil.vue'
+import Home from '../views/Home.vue'
+import stvoriTermin from '../views/stvoriTermin.vue'
+import mojTermin from '../views/mojTermin.vue'
 
 Vue.use(VueRouter)
 
@@ -21,6 +24,21 @@ const routes = [
     path: '/profil',
     name: 'Profil',
     component: Profil
+  },
+  {
+    path: '/home',
+    name: 'Home',
+    component: Home
+  },
+  {
+    path: '/stvori-termin',
+    name: 'stvoriTermin',
+    component: stvoriTermin
+  },
+  {
+    path: '/moj-termin',
+    name: 'mojTermin',
+    component: mojTermin
   }
 ]
 
