@@ -1,5 +1,9 @@
 <template>
     <div class="container profile-edit">
+       <div class="back">
+        <button @click="goBack" class="btn-back">&larr;</button>
+    </div>
+        <img src="@/assets/logo.png" alt="Logo" class="logo">
         <h2 class="text-center">Postavi profil</h2>
         <div class="picture-upload">
             <input type="text" @change="onFileChange" id="fileInput" class="file-input" />
@@ -50,19 +54,35 @@ export default {
         onFileChange(event) {
             const file = event.target.files[0]
             this.picture = file;
+        },
+        saveChanges(){
+            //Spremi promjene u profilu
+        },
+        goBack(){
+        this.$router.push('/home')
         }
     }
 }
 
 </script>
 
-<style>
-.container {
+<style scoped>
+.home-container {
     padding: 20px;
     display: block;
 }
+.btn-back{
+    font-size: 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: green;
+}
+.logo {
+    height: 50px;
+}
 .profile-edit{
-    max-width: 200px;
+    max-width: 300px;
     margin: auto;
     text-align: center;
 }
@@ -82,6 +102,13 @@ export default {
 }
 .picture-label i {
     margin-right: 8px;
+}
+.profile-picture {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-top: 10px;
 }
 .btn-full-width {
     width: 100px;

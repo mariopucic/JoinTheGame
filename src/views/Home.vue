@@ -2,6 +2,7 @@
     
     <div class="home-container">
         <header class="header">
+            <img src="@/assets/logo.png" alt="Logo" class="logo">
             <h2>Join the Game</h2>
         </header>
         <div class="button-container">
@@ -35,8 +36,13 @@ export default {
         this.fetchTermini()
     },
     methods: {
-        
-            
+        async fetchTermin() {
+            const querySnapshot = await getDocs(collection(db, "termini"))
+            querySnapshot.forEach((doc) => {
+                const termin = doc.data()
+                termin.id = doc.id
+                this.termini.push(termin)
+            })
         },
         stvoriTermin(){
             this.$router.push('/stvori-termin')
@@ -44,11 +50,11 @@ export default {
         mojTermin(){
             this.$router.push('/moj-termin')
         }
-    
+    }
 }
 </script>
 
-<style>
+<style scoped>
 .home-container{
     padding: 20px;
 }
@@ -56,19 +62,30 @@ export default {
     text-align: center;
     margin-bottom: 20px;
 }
-.buttons-container{
+.logo {
+    height: 50px;
+}
+.button-container{
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
     gap: 20px;
 }
-.btn-termin,
+.btn-termin{
+    background-color: #f0f0f0;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+   
+}
 .btn-moj-termin{
     background-color: #f0f0f0;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
+    
 }
 
 .no-termini{
