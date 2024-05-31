@@ -73,7 +73,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .kreiraj-termin-container {
   padding: 20px;
