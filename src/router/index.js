@@ -4,7 +4,7 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Profil from '../views/Profil.vue'
 import Home from '../views/Home.vue'
-import stvoriTermin from '../views/kreirajTermin.vue'
+import kreirajTermin from '../views/kreirajTermin.vue'
 import mojTermin from '../views/mojTermin.vue'
 
 Vue.use(VueRouter)
