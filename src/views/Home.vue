@@ -6,7 +6,7 @@
             <h2>Join the Game</h2>
         </header>
         <div class="button-container">
-            <button @click="stvoriTermin" class="btn-termin">Kreiraj termin</button>
+            <button @click="kreirajTermin" class="btn-termin">Kreiraj termin</button>
             <button @click="mojTermin" class="btn-moj-termin">Moji termini</button>
         </div>
        
@@ -44,8 +44,8 @@ export default {
                 this.termini.push(termin)
             })
         },
-        stvoriTermin(){
-            this.$router.push('/stvori-termin')
+        kreirajTermin(){
+            this.$router.push('/kreiraj-termin')
         },
         mojTermin(){
             this.$router.push('/moj-termin')

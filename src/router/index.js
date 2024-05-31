@@ -4,7 +4,7 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Profil from '../views/Profil.vue'
 import Home from '../views/Home.vue'
-import stvoriTermin from '../views/stvoriTermin.vue'
+import stvoriTermin from '../views/kreirajTermin.vue'
 import mojTermin from '../views/mojTermin.vue'
 
 Vue.use(VueRouter)
@@ -31,9 +31,9 @@ const routes = [
     component: Home
   },
   {
-    path: '/stvori-termin',
-    name: 'stvoriTermin',
-    component: stvoriTermin
+    path: '/kreiraj-termin',
+    name: 'kreirajTermin',
+    component: kreirajTermin
   },
   {
     path: '/moj-termin',
