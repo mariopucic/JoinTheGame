@@ -1,4 +1,3 @@
 <template>
-    <h1>Moji termini</h1>
+  <h1>Moj termin</h1>
 </template>
-

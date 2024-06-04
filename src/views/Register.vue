@@ -6,9 +6,6 @@
       <h2>Dobro došli</h2>
       <form @submit.prevent="register" class="form-container">
         <div class="form-group">
-          <input type="text" v-model="name" class="form-control" placeholder="Ime" required>
-        </div>
-        <div class="form-group">
           <input type="email" v-model="email" class="form-control" placeholder="Email" required>
         </div>
         <div class="form-group">
@@ -27,11 +24,11 @@
   
   <script>
   import { auth, googleProvider } from '@/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
   
   export default {
     data() {
       return {
-        name: '',
         email: '',
         password: ''
       };
@@ -39,22 +36,23 @@
     methods: {
       async register() {
         try {
-          const userCredential = await auth.createUserWithEmailAndPassword(this.email, this.password);
-          const user = userCredential.user;
-          await user.updateProfile({
-            displayName: this.name
-          });
-          this.$router.push('/profile');
+          const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password);
+          const user = userCredential.user
+          console.log('User registered with email:', user.email);
+          this.$router.push('/profil');
         } catch (error) {
-          alert(error.message);
+          alert(error.message)
         }
       },
       async loginWithGoogle() {
         try {
-          await auth.signInWithPopup(googleProvider);
-          this.$router.push('/profile');
-        } catch (error) {
-          alert(error.message);
+          const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+        console.log('Logged in with Google:', user.displayName);
+        this.$router.push('/profile');
+      } catch (error) {
+        console.error('Google sign-in error:', error);
+        alert(error.message);
         }
       }
     }

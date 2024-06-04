@@ -12,9 +12,6 @@
         <input type="password" v-model="password" class="form-control" placeholder="Šifra" required>
       </div>
       <button type="submit" class="btn btn-success btn-full-width">Prijava</button>
-      <div class="text-right">
-        <button class="forgot-password">Zaboravljena šifra?</button>
-      </div>
     </form>
     <p class="mt-3">Nisi još registriran? <router-link to="/register" class="text-danger">Registracija</router-link></p>
     <div class="icon-container">
@@ -26,6 +23,9 @@
 </template>
 
 <script>
+import { auth } from '@/firebase';
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetUltraEmail } from 'firebase/auth';
+
 export default {
   data() {
     return {
@@ -34,13 +34,22 @@ export default {
     };
   },
   methods: {
-    login() {
-      // Implementirajte logiku za prijavu korisnika
-      console.log('Prijavljivanje...');
+    async login() {
+      try {
+        await signInWithEmailAndPassword(auth, this.email, this.password);
+        this.$router.push('/home'); // Preusmjeravanje na Home.vue nakon uspješne prijave
+      } catch (error) {
+        alert("Pogreška pri prijavi: " + error.message);
+      }
     },
-    loginWithGoogle() {
-      // Implementirajte logiku za prijavu putem Google-a
-      console.log('Prijavljivanje putem Google-a...');
+    async loginWithGoogle() {
+      try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        this.$router.push('/home'); // Preusmjeravanje na Home.vue nakon uspješne prijave
+      } catch (error) {
+        alert("Pogreška pri prijavi s Googleom: " + error.message);
+      }
     }
   }
 };

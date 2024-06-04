@@ -5,22 +5,22 @@
     </div>
         <img src="@/assets/logo.png" alt="Logo" class="logo">
         <h2 class="text-center">Postavi profil</h2>
-        <div class="picture-upload">
-            <input type="text" @change="onFileChange" id="fileInput" class="file-input" />
-            <label for="fileInput" class="picture-label">
-                <i class="fa fa-camera"></i>
-                <span>Dodaj sliku</span>
-            </label>
-        </div>
         <form @submit.prevent="saveChanges" class="form-container">
             <div class="form-group mb-3">
                 <input type="text" v-model="name" class="form-control" placeholder="Ime" required />
             </div>
             <div class="form-group mb-3">
-                <input type="text" class="form-control" v-model="game" placeholder="Igra" requred />
+                <select class="form-control" v-model="gender" required>
+                    <option value="" disabled>Spol</option>
+                    <option value="muško">Muško</option>
+                    <option value="žensko">Žensko</option>
+                </select>
             </div>
+            <div class="sports-container">
             <div class="form-group mb-3">
-                <select class="form-control" v-model="level" required>
+                <label>Košarka</label>
+                <input type="checkbox" v-model="sports.kosarka.selected" />
+                <select v-if="sports.kosarka.selected" class="form-control" v-model="sports.kosarka.level">
                     <option value="" disabled>Razina</option>
                     <option value="Beginner">Beginner</option>
                     <option value="Amateur">Amateur</option>
@@ -31,7 +31,21 @@
                 </select>
             </div>
             <div class="form-group mb-3">
-                <textarea class="form-control" v-model="description" placeholder="Dodatni opis..." rows="2"></textarea>
+                <label>Nogomet</label>
+                <input type="checkbox" v-model="sports.nogomet.selected" />
+                <select v-if="sports.nogomet.selected" class="form-control" v-model="sports.nogomet.level">
+                    <option value="" disabled>Razina</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Amateur">Amateur</option>
+                    <option value="Semi-Pro">Semi-Pro</option>
+                    <option value="Professional">Professional</option>
+                    <option value="World Class">World Class</option>
+                    <option value="Legendary">Legendary</option>
+                </select>
+            </div>
+        </div>
+            <div class="form-group mb-3">
+                <textarea class="form-control" v-model="description" placeholder="Dodatni opis..." rows="5"></textarea>
             </div>
             <button class="btn btn-success btn-full-widith">Spremi</button>
         </form>
@@ -40,30 +54,58 @@
 </template>
 
 <script>
+import { auth, db } from '@/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+
 export default {
     data() {
         return {
             name: '',
-            game: '',
-            level: '',
-            description: '',
-            picture: null
-        }
+            gender: '',
+            sports: {
+                kosarka: { selected: false, level: '' },
+                nogomet: { selected: false, level: '' }
+            },
+            description: ''
+        };
+    },
+    created() {
+        this.loadUserProfile();
     },
     methods: {
-        onFileChange(event) {
-            const file = event.target.files[0]
-            this.picture = file;
+        async loadUserProfile() {
+            const userDocRef = doc(db, "users", auth.currentUser.uid);
+            const docSnap = await getDoc(userDocRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                this.name = data.name;
+                this.gender = data.gender;
+                this.sports.kosarka = data.sports.kosarka;
+                this.sports.nogomet = data.sports.nogomet;
+                this.description = data.description;
+            } else {
+                console.log("No such document!");
+            }
         },
-        saveChanges(){
-            //Spremi promjene u profilu
+        async saveChanges() {
+            const userDocRef = doc(db, "users", auth.currentUser.uid);
+            await setDoc(userDocRef, {
+                name: this.name,
+                gender: this.gender,
+                sports: {
+                    kosarka: this.sports.kosarka,
+                    nogomet: this.sports.nogomet
+                },
+                description: this.description
+            }, { merge: true });
+            alert('Profil je uspješno ažuriran!');
+            this.$router.push('/home');
         },
-        goBack(){
-        this.$router.push('/home')
+        goBack() {
+            this.$router.push('/home');
         }
     }
 }
-
 </script>
 
 <style scoped>
@@ -86,30 +128,16 @@ export default {
     margin: auto;
     text-align: center;
 }
-.picture-upload{
-    margin-top: 20px;
-    margin-bottom: 20px;
+.sports-container {
+    display: flex;
+    justify-content: space-between;
 }
-.file-input{
-    display: none;
+input[type="checkbox"] {
+    transform: scale(1.5); /* Povećava checkbox */
+    margin: 10px; /* Dodaje prostor oko checkboxa */
+    cursor: pointer; /* Pokazuje pointer cursor kad je miš iznad checkboxa */
 }
-.picture-label {
-    display: inline-block;
-    padding: 50px;
-    border: 2px solid #bbbbbb;
-    border-radius: 8px;
-    cursor: pointer;
-}
-.picture-label i {
-    margin-right: 8px;
-}
-.profile-picture {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-top: 10px;
-}
+
 .btn-full-width {
     width: 100px;
 }
