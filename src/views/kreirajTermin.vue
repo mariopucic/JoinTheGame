@@ -23,7 +23,7 @@
         <input type="number" v-model="slotsNeeded" class="form-control" placeholder="Potrebno igrača" required />
       </div>
       <div class="form-group mb-3">
-        <select v-model="gender" class="form-control" required @change="clearPlaceholder"> 
+        <select v-model="gender" class="form-control" required @change="clearPlaceholder" ref="genderSelect"> 
           <option value="" disabled selected>Spol</option>
           <option value="male">Muški</option>
           <option value="female">Ženski</option>
@@ -37,12 +37,13 @@
       <div class="form-group mb-3">
         <textarea v-model="opis" class="form-control" placeholder="Dodatni opis..." rows="5"></textarea>
       </div>
-      <button type="submit" class="btn btn-success btn-full-width">Kreiraj</button>
+      <button type="submit" @click="createTermin" class="btn btn-success btn-full-width">Kreiraj</button>
   </div>
 </template>
 
 <script>
-
+import {db} from '@/firebase';
+import {collection, addDoc} from 'firebase/firestore';
 export default {
   data() {
     return {
@@ -69,6 +70,25 @@ export default {
       if(this.gender !== '')
         this.$refs.genderSelect.value = this.gender
      
+    },
+    async createTermin() {
+      try {
+        await addDoc(collection(db, "termini"), {
+          name: this.name,
+          sport: this.sport,
+          location: this.location,
+          startDate: this.startDate,
+          time: this.time,
+          slotsNeeded: this.slotsNeeded,
+          gender: this.gender,
+          minGod: this.minGod,
+          maxGod: this.maxGod,
+          opis: this.opis
+        });
+        this.$router.push('/home');
+      } catch (error) {
+        console.error("Error adding document: ", error)
+      }
     }
   }
 }
