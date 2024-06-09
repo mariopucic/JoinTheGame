@@ -1,19 +1,36 @@
 <template>
   <div class="container centered">
     <div class="text-center mb-4">
-      <img src="@/assets/logo.png" alt="Sports" class="logo">
+      <img src="@/assets/logo.png" alt="Sports" class="logo" />
     </div>
     <h2>Dobro došli</h2>
     <form @submit.prevent="login" class="form-container">
       <div class="form-group">
-        <input type="text" v-model="email" class="form-control" placeholder="Email" required>
+        <input
+          type="text"
+          v-model="email"
+          class="form-control"
+          placeholder="Email"
+          required
+        />
       </div>
       <div class="form-group">
-        <input type="password" v-model="password" class="form-control" placeholder="Šifra" required>
+        <input
+          type="password"
+          v-model="password"
+          class="form-control"
+          placeholder="Šifra"
+          required
+        />
       </div>
-      <button type="submit" class="btn btn-success btn-full-width">Prijava</button>
+      <button type="submit" class="btn btn-success btn-full-width">
+        Prijava
+      </button>
     </form>
-    <p class="mt-3">Nisi još registriran? <router-link to="/register" class="text-danger">Registracija</router-link></p>
+    <p class="mt-3">
+      Nisi još registriran?
+      <router-link to="/register" class="text-danger">Registracija</router-link>
+    </p>
     <div class="icon-container">
       <button @click="loginWithGoogle" class="btn btn-outline-danger btn-icon">
         <i class="fab fa-google"></i>
@@ -24,34 +41,38 @@
 
 <script>
 import { auth } from '@/firebase';
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetUltraEmail } from 'firebase/auth';
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from 'firebase/auth';
 
 export default {
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
     };
   },
   methods: {
     async login() {
       try {
-        await signInWithEmailAndPassword(auth, this.email, this.password);
-        this.$router.push('/home'); // Preusmjeravanje na Home.vue nakon uspješne prijave
+        await signInWithEmailAndPassword(auth, this.email, this.password)
+        this.$router.push('/home')
       } catch (error) {
-        alert("Pogreška pri prijavi: " + error.message);
+        alert('Pogreška pri prijavi: ' + error.message)
       }
     },
     async loginWithGoogle() {
       try {
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
-        this.$router.push('/home'); // Preusmjeravanje na Home.vue nakon uspješne prijave
+        const provider = new GoogleAuthProvider()
+        await signInWithPopup(auth, provider)
+        this.$router.push('/home')
       } catch (error) {
-        alert("Pogreška pri prijavi s Googleom: " + error.message);
+        alert('Pogreška pri prijavi s Googleom: ' + error.message)
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

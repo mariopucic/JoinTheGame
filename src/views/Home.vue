@@ -1,7 +1,7 @@
 <template>
   <div class="home-container">
     <header class="header">
-      <img src="@/assets/logo.png" alt="Logo" class="logo">
+      <img src="@/assets/logo.png" alt="Logo" class="logo" />
       <h2>Join the Game</h2>
     </header>
     <div class="button-container">
@@ -17,9 +17,23 @@
           <p>Sport: {{ termin.sport }}</p>
           <p>Opis: {{ termin.opis }}</p>
           <p class="needed">Potrebno: {{ termin.slotsNeeded }}</p>
-          <button v-if="!isPrijavljen(termin.id) && termin.slotsNeeded > 0" @click="prijaviSe(termin.id)" class="btn-prijava">Prijava</button>
-          <button v-else-if="isPrijavljen(termin.id)" @click="otkaziSe(termin.id)" class="btn-otkazi">Otkaži</button>
-          <p v-else-if="termin.slotsNeeded === 0" class="popunjeno">Termin je popunjen</p>
+          <button
+            v-if="!isPrijavljen(termin.id) && termin.slotsNeeded > 0"
+            @click="prijaviSe(termin.id)"
+            class="btn-prijava"
+          >
+            Prijava
+          </button>
+          <button
+            v-else-if="isPrijavljen(termin.id)"
+            @click="otkaziSe(termin.id)"
+            class="btn-otkazi"
+          >
+            Otkaži
+          </button>
+          <p v-else-if="termin.slotsNeeded === 0" class="popunjeno">
+            Termin je popunjen
+          </p>
         </div>
       </div>
     </div>
@@ -37,13 +51,20 @@
 
 <script>
 import { db } from '@/firebase';
-import { collection, getDocs, updateDoc, doc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  updateDoc,
+  doc,
+  arrayUnion,
+  arrayRemove,
+} from 'firebase/firestore';
 
 export default {
   data() {
     return {
       termini: [],
-      userId: null 
+      userId: null,
     };
   },
   created() {
@@ -51,12 +72,13 @@ export default {
   },
   methods: {
     async fetchTermini() {
-      const querySnapshot = await getDocs(collection(db, "termini"));
+      const querySnapshot = await getDocs(collection(db, 'termini'));
       this.termini = [];
       querySnapshot.forEach((doc) => {
         const termin = doc.data();
         termin.id = doc.id;
-        termin.prijavljen = termin.prijavljeni && termin.prijavljeni.includes(this.userId); 
+        termin.prijavljen =
+          termin.prijavljeni && termin.prijavljeni.includes(this.userId);
         this.termini.push(termin);
       });
     },
@@ -67,147 +89,184 @@ export default {
       this.$router.push('/moj-termin');
     },
     async prijaviSe(id) {
-      const terminIndex = this.termini.findIndex(termin => termin.id === id);
+      const terminIndex = this.termini.findIndex((termin) => termin.id === id);
       if (terminIndex !== -1) {
         const termin = this.termini[terminIndex];
         if (!termin.prijavljen && termin.slotsNeeded > 0) {
           this.termini[terminIndex].slotsNeeded -= 1;
           this.termini[terminIndex].prijavljen = true;
-          await updateDoc(doc(db, "termini", id), {
+          await updateDoc(doc(db, 'termini', id), {
             slotsNeeded: this.termini[terminIndex].slotsNeeded,
-            prijavljeni: arrayUnion(this.userId)
+            prijavljeni: arrayUnion(this.userId),
           });
           alert(`Prijavljeni ste na termin ${termin.name}`);
-          this.fetchTermini(); 
+          this.fetchTermini();
         } else {
           alert('Već ste prijavljeni na ovaj termin.');
         }
       }
     },
     async otkaziSe(id) {
-      const terminIndex = this.termini.findIndex(termin => termin.id === id);
+      const terminIndex = this.termini.findIndex((termin) => termin.id === id);
       if (terminIndex !== -1) {
         const termin = this.termini[terminIndex];
         if (termin.prijavljen) {
           this.termini[terminIndex].slotsNeeded += 1;
           this.termini[terminIndex].prijavljen = false;
-          await updateDoc(doc(db, "termini", id), {
+          await updateDoc(doc(db, 'termini', id), {
             slotsNeeded: this.termini[terminIndex].slotsNeeded,
-            prijavljeni: arrayRemove(this.userId)
+            prijavljeni: arrayRemove(this.userId),
           });
           alert(`Otkazali ste prijavu za termin ${termin.name}`);
-          this.fetchTermini(); 
+          this.fetchTermini();
         } else {
           alert('Niste prijavljeni na ovaj termin.');
         }
       }
     },
     isPrijavljen(id) {
-      const termin = this.termini.find(t => t.id === id);
-      return termin && termin.prijavljeni && termin.prijavljeni.includes(this.userId);
-    }
+      const termin = this.termini.find((t) => t.id === id);
+      return (
+        termin && termin.prijavljeni && termin.prijavljeni.includes(this.userId)
+      );
+    },
   },
   watch: {
-    '$route' (to, from) {
+    $route(to, from) {
       if (to.path === '/') {
         this.fetchTermini();
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
-.home-container {
-  padding: 20px;
-}
 .header {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  font-size: 28px;
+  color: #2a2a2a;
 }
+
 .logo {
-  height: 50px;
+  height: 60px;
 }
+
 .button-container {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
   gap: 20px;
 }
-.btn-termin {
-  background-color: #f0f0f0;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
+
+.btn-termin,
 .btn-moj-termin {
-  background-color: #f0f0f0;
+  background-color: #4a90e2;
+  color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: 12px 24px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
+
+.btn-termin:hover,
+.btn-moj-termin:hover {
+  background-color: #357abd;
+}
+
 .termini-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  padding: 20px;
+  justify-content: center;
+  overflow-y: auto;
+  max-height: calc(100vh - 250px);
+}
+
+.termin-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  max-height: calc(100vh - 200px); 
-  overflow-y: auto;
+  justify-content: space-between;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
-.termin-card {
-  background-color: #fff;
-  width: 500px;
-  margin: auto;
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+
+.termin-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
 }
-.termin-info {
-  text-align: center;
+
+.termin-info h3 {
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
-.needed {
-  color: red;
+
+.termin-info p {
+  color: #666;
+  margin: 5px 0;
+  line-height: 1.5;
 }
-.prijavljen, .popunjeno {
-  color: green;
-  margin-top: 10px;
+
+.needed,
+.popunjeno {
+  color: #e53e3e;
+  font-weight: bold;
 }
+
+.btn-prijava,
+.btn-otkazi {
+  padding: 10px 20px;
+  border-radius: 6px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
 .btn-prijava {
   background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
 }
+
+.btn-prijava:hover {
+  background-color: #1e6b30;
+}
+
 .btn-otkazi {
   background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
 }
+
+.btn-otkazi:hover {
+  background-color: #a7262d;
+}
+
 .no-termini {
   text-align: center;
   margin-top: 20px;
+  font-size: 18px;
+  color: #666;
 }
+
 .navbar {
   display: flex;
   justify-content: space-around;
   position: fixed;
   bottom: 0;
   width: 100%;
-  background-color: green;
+  background-color: #4a90e2;
   padding: 10px 0;
 }
+
 .nav-link {
-  margin-left: auto;
-  margin-right: auto;
   color: #fff;
   text-align: center;
+  font-size: 16px;
 }
 </style>

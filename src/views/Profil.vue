@@ -133,9 +133,9 @@ export default {
     justify-content: space-between;
 }
 input[type="checkbox"] {
-    transform: scale(1.5); /* Povećava checkbox */
-    margin: 10px; /* Dodaje prostor oko checkboxa */
-    cursor: pointer; /* Pokazuje pointer cursor kad je miš iznad checkboxa */
+    transform: scale(1.5); 
+    margin: 10px; 
+    cursor: pointer; 
 }
 
 .btn-full-width {
