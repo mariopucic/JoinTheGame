@@ -82,7 +82,7 @@ export default {
       }
     },
     goBack() {
-      window.history.back();
+      this.$router.push('/home');
     },
   },
 };

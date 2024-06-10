@@ -144,7 +144,7 @@ export default {
   },
   methods: {
     goBack() {
-      window.history.back();
+      this.$router.push('/home');
     },
     selectSport(sport) {
       this.sport = sport;
