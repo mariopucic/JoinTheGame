@@ -11,24 +11,21 @@
         v-model="name"
         class="form-control"
         placeholder="Naziv"
-        required
-      />
+        required/>
     </div>
     <div class="form-group mb-3 sport-buttons">
       <button
         type="button"
         @click="selectSport('kosarka')"
         :class="{ selected: sport === 'kosarka' }"
-        class="btn-sport"
-      >
+        class="btn-sport">
         Košarka
       </button>
       <button
         type="button"
         @click="selectSport('nogomet')"
         :class="{ selected: sport === 'nogomet' }"
-        class="btn-sport"
-      >
+        class="btn-sport">
         Nogomet
       </button>
     </div>
@@ -38,8 +35,7 @@
         v-model="location"
         class="form-control"
         placeholder="Lokacija"
-        required
-      />
+        required/>
     </div>
     <div class="form-group mb-3 date-group">
       <input
@@ -47,15 +43,13 @@
         v-model="startDate"
         class="form-control"
         placeholder="Datum (početak)"
-        required
-      />
+        required/>
       <input
         type="time"
         v-model="time"
         class="form-control"
         placeholder="Vrijeme"
-        required
-      />
+        required/>
     </div>
     <div class="form-group mb-3">
       <input
@@ -63,8 +57,7 @@
         v-model="slotsNeeded"
         class="form-control"
         placeholder="Potrebno igrača"
-        required
-      />
+        required/>
     </div>
     <div class="form-group mb-3">
       <select
@@ -72,8 +65,7 @@
         class="form-control"
         required
         @change="clearPlaceholder"
-        ref="genderSelect"
-      >
+        ref="genderSelect">
         <option value="" disabled selected>Spol</option>
         <option value="male">Muški</option>
         <option value="female">Ženski</option>
@@ -86,15 +78,13 @@
         v-model="minGod"
         class="form-control"
         placeholder="Min godina"
-        required
-      />
+        required/>
       <input
         type="number"
         v-model="maxGod"
         class="form-control"
         placeholder="Max godina"
-        required
-      />
+        required/>
     </div>
     <div class="form-group mb-3">
       <textarea
@@ -108,20 +98,20 @@
       type="submit"
       @click="createTermin"
       class="btn btn-success btn-full-width"
-      :disabled="!isFormValid"
-    >
+      :disabled="!isFormValid">
       Kreiraj
     </button>
   </div>
 </template>
+
 <script>
-import { db } from '@/firebase';
+import { db, auth } from '@/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 
 export default {
   data() {
     return {
-      id: null,
+      userId: null,
       name: '',
       location: '',
       startDate: '',
@@ -143,6 +133,9 @@ export default {
       this.sport = sport;
       this.validateForm();
     },
+    clearPlaceholder() {
+      this.$refs.genderSelect.placeholder = '';
+    },
     validateForm() {
       this.isFormValid =
         this.name &&
@@ -156,9 +149,10 @@ export default {
         this.sport;
     },
     async createTermin() {
-      if (this.isFormValid) {
+      if (this.userId && this.isFormValid) {
         try {
           const termin = {
+            userId: this.userId,
             name: this.name,
             location: this.location,
             startDate: this.startDate,
@@ -173,12 +167,12 @@ export default {
           await addDoc(collection(db, 'termini'), termin);
           this.$router.push('/home');
         } catch (error) {
-          console.error('Error creating termin: ', error);
+          alert('Greška pri kreiranju termina. Pokušajte ponovno.');
         }
       } else {
-        alert('Molimo ispunite sva polja.');
+        alert('Molimo popunite sva polja ispravno prije kreiranja termina.');
       }
-    }
+    },
   },
   watch: {
     name: 'validateForm',
@@ -192,10 +186,16 @@ export default {
     sport: 'validateForm',
   },
   created() {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      this.userId = currentUser.uid;
+    }
     this.validateForm();
   },
 };
 </script>
+
+
 <style scoped>
 .kreiraj-termin-container {
   padding: 20px;

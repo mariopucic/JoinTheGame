@@ -109,16 +109,21 @@ export default {
 </script>
 
 <style scoped>
-.home-container {
+.container.profile-edit{
     padding: 20px;
-    display: block;
+    max-width: 500px;
+    margin: 20px auto;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    background: #fff;
 }
 .btn-back{
     font-size: 24px;
     border: none;
     background: none;
     cursor: pointer;
-    color: green;
+    color: #28a745;
 }
 .logo {
     height: 50px;

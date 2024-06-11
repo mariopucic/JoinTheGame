@@ -5,35 +5,33 @@
       <h2>Join the Game</h2>
     </header>
     <div class="button-container">
-      <button @click="kreirajTermin" class="btn-termin">Kreiraj termin</button>
-      <button @click="mojTermin" class="btn-moj-termin">Moji termini</button>
+      <button @click="kreirajTermin" class="btn btn-termin">Kreiraj termin</button>
+      <button @click="mojTermin" class="btn btn-termin">Moji termini</button>
     </div>
     <div v-if="termini.length > 0" class="termini-list">
-      <div v-for="termin in termini" :key="termin.id" class="termin-card">
+      <div v-for="termin in termini" :key="termin.id" class="termin-card position-relative" :style="getCardStyle(termin.sport)">
         <div class="termin-header">
           <h3>{{ termin.name }}</h3>
           <button v-if="termin.userId === userId" @click="obrisiTermin(termin.id)" class="btn-delete">
-            🗑️
+            Izbriši
           </button>
         </div>
         <div class="termin-info">
-          <p>{{ termin.location }}</p>
-          <p>{{ termin.startDate }} {{ termin.time }}</p>
-          <p>Sport: {{ termin.sport }}</p>
-          <p>Opis: {{ termin.opis }}</p>
-          <p class="needed">Potrebno: {{ termin.slotsNeeded }}</p>
+          <p><strong>Lokacija:</strong> {{ termin.location }}</p>
+          <p><strong>Datum i vrijeme:</strong> {{ termin.startDate }} {{ termin.time }}</p>
+          <p><strong>Sport:</strong> {{ termin.sport }}</p>
+          <p><strong>Opis:</strong> {{ termin.opis }}</p>
+          <p class="needed"><strong>Potrebno:</strong> {{ termin.slotsNeeded }}</p>
+
           <button
             v-if="!termin.prijavljen && termin.slotsNeeded > 0"
             @click="prijaviSe(termin.id)"
-            class="btn-prijava"
-          >
+            class="btn btn-success">
             Prijava
           </button>
-          <button
-            v-else-if="termin.prijavljen"
+          <button v-else-if="termin.prijavljen"
             @click="otkaziSe(termin.id)"
-            class="btn-otkazi"
-          >
+            class="btn btn-warning">
             Otkaži
           </button>
           <p v-else-if="termin.slotsNeeded === 0" class="popunjeno">
@@ -57,15 +55,12 @@
 <script>
 import { db, auth } from '@/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import {
-  collection,
-  getDocs,
-  updateDoc,
-  doc,
-  arrayUnion,
-  arrayRemove,
-  deleteDoc,
+  collection, getDocs, updateDoc, doc, arrayUnion, arrayRemove,
 } from 'firebase/firestore';
+
+const functions = getFunctions();
 
 export default {
   data() {
@@ -82,7 +77,7 @@ export default {
       onAuthStateChanged(auth, (user) => {
         if (user) {
           this.userId = user.uid;
-          this.fetchTermini(); 
+          this.fetchTermini();
         } else {
           this.userId = null;
           this.termini = [];
@@ -90,7 +85,7 @@ export default {
       });
     },
     async fetchTermini() {
-      if (this.userId === null) return; 
+      if (this.userId === null) return;
       const querySnapshot = await getDocs(collection(db, 'termini'));
       this.termini = [];
       querySnapshot.forEach((doc) => {
@@ -144,14 +139,37 @@ export default {
     },
     async obrisiTermin(id) {
       if (confirm('Jeste li sigurni da želite obrisati ovaj termin?')) {
-        await deleteDoc(doc(db, 'termini', id));
-        alert('Termin je obrisan.');
-        this.fetchTermini();
+        const deleteFunction = httpsCallable(functions, 'deleteTermin');
+        try {
+          const result = await deleteFunction({ terminId: id });
+          alert(result.data.message);
+          this.fetchTermini();
+        } catch (error) {
+          alert('Greška pri brisanju termina: ' + error.message);
+        }
       }
     },
     isPrijavljen(id) {
       const termin = this.termini.find((t) => t.id === id);
       return termin && termin.prijavljeni && termin.prijavljeni.includes(this.userId);
+    },
+    getCardStyle(sport) {
+      if (sport === 'kosarka') {
+        return {
+          backgroundImage: `url(${require('@/assets/basketball.jpg')})`,
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+        };
+      } else if (sport === 'nogomet') {
+        return {
+          backgroundImage: `url(${require('@/assets/football.jpg')})`,
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+        };
+      }
+      return {};
     },
   },
   watch: {
@@ -185,7 +203,7 @@ export default {
 
 .btn-termin,
 .btn-moj-termin {
-  background-color: #4a90e2;
+  background-color: #28a745;
   color: white;
   border: none;
   padding: 12px 24px;
@@ -196,7 +214,7 @@ export default {
 
 .btn-termin:hover,
 .btn-moj-termin:hover {
-  background-color: #357abd;
+  background-color: #28a745;
 }
 
 .termini-list {
@@ -210,7 +228,7 @@ export default {
 }
 
 .termin-card {
-  background-color: #f9f9f9;
+  background-color: rgba(255, 255, 255, 0.8);
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 20px;
@@ -219,6 +237,10 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  background-blend-mode: lighten;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .termin-card:hover {
@@ -226,10 +248,34 @@ export default {
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
 }
 
-.termin-info h3 {
+.termin-header {
+  position: relative;
+}
+
+.termin-header h3 {
   color: #333;
   font-weight: bold;
   margin-bottom: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.sport-image {
+  width: 100%;
+  height: auto;
+  margin-bottom: 15px;
+}
+
+.btn-delete {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 3px;
+  cursor: pointer;
 }
 
 .termin-info p {
@@ -238,8 +284,12 @@ export default {
   line-height: 1.5;
 }
 
-.needed,
-.popunjeno {
+.termin-info p strong {
+  color: #333;
+}
+
+.termin-info .needed,
+.termin-info .popunjeno {
   color: #e53e3e;
   font-weight: bold;
 }
@@ -252,6 +302,7 @@ export default {
   border: none;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin-top: 10px;
 }
 
 .btn-prijava {
@@ -259,7 +310,7 @@ export default {
 }
 
 .btn-prijava:hover {
-  background-color: #1e6b30;
+  background-color: #28a745;
 }
 
 .btn-otkazi {
@@ -283,7 +334,7 @@ export default {
   position: fixed;
   bottom: 0;
   width: 100%;
-  background-color: #4a90e2;
+  background-color: #28a745;
   padding: 10px 0;
 }
 
@@ -291,15 +342,5 @@ export default {
   color: #fff;
   text-align: center;
   font-size: 16px;
-}
-
-.btn-delete {
-  background: none;
-  border: none;
-  color: red;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 0;
-  margin-left: 10px;
 }
 </style>

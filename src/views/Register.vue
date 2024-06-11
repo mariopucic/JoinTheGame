@@ -11,8 +11,7 @@
           v-model="email"
           class="form-control"
           placeholder="Email"
-          required
-        />
+          required/>
       </div>
       <div class="form-group">
         <input
@@ -20,8 +19,7 @@
           v-model="password"
           class="form-control"
           placeholder="Šifra"
-          required
-        />
+          required/>
       </div>
       <button type="submit" class="btn btn-success btn-full-width">
         Registracija
@@ -29,7 +27,7 @@
     </form>
     <p class="mt-3">
       Imaš račun?
-      <router-link to="/login" class="text-danger">Prijava</router-link>
+      <router-link to="/" class="text-danger">Prijava</router-link>
     </p>
     <div class="icon-container">
       <button @click="loginWithGoogle" class="btn btn-outline-danger btn-icon">
@@ -113,10 +111,11 @@ export default {
 .btn-icon {
   width: 100%;
 }
+
 .form-group {
   margin-bottom: 20px;
 }
-h2 {
+.h2 {
   margin-bottom: 25px;
   font-size: 2em;
 }
