@@ -114,17 +114,9 @@
     </button>
   </div>
 </template>
-
 <script>
 import { db } from '@/firebase';
-import {
-  collection,
-  doc,
-  getDoc,
-  updateDoc,
-  deleteDoc,
-  addDoc,
-} from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 
 export default {
   data() {
@@ -140,37 +132,70 @@ export default {
       maxGod: '',
       opis: '',
       sport: '',
+      isFormValid: false,
     };
   },
   methods: {
     goBack() {
-      this.$router.push('/home');
+      this.$router.go(-1);
     },
     selectSport(sport) {
       this.sport = sport;
+      this.validateForm();
     },
-  },
-  computed: {
-    isFormValid() {
-      return (
+    validateForm() {
+      this.isFormValid =
         this.name &&
         this.location &&
         this.startDate &&
         this.time &&
-        this.slotsNeeded &&
+        this.slotsNeeded > 0 &&
         this.gender &&
-        this.minGod &&
-        this.maxGod &&
-        this.sport
-      );
+        this.minGod >= 0 &&
+        this.maxGod >= 0 &&
+        this.sport;
     },
+    async createTermin() {
+      if (this.isFormValid) {
+        try {
+          const termin = {
+            name: this.name,
+            location: this.location,
+            startDate: this.startDate,
+            time: this.time,
+            slotsNeeded: this.slotsNeeded,
+            gender: this.gender,
+            minGod: this.minGod,
+            maxGod: this.maxGod,
+            opis: this.opis,
+            sport: this.sport,
+          };
+          await addDoc(collection(db, 'termini'), termin);
+          this.$router.push('/home');
+        } catch (error) {
+          console.error('Error creating termin: ', error);
+        }
+      } else {
+        alert('Molimo ispunite sva polja.');
+      }
+    }
+  },
+  watch: {
+    name: 'validateForm',
+    location: 'validateForm',
+    startDate: 'validateForm',
+    time: 'validateForm',
+    slotsNeeded: 'validateForm',
+    gender: 'validateForm',
+    minGod: 'validateForm',
+    maxGod: 'validateForm',
+    sport: 'validateForm',
   },
   created() {
-    this.fetchTermin();
+    this.validateForm();
   },
 };
 </script>
-
 <style scoped>
 .kreiraj-termin-container {
   padding: 20px;

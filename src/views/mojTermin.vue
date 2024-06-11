@@ -2,15 +2,10 @@
   <div class="moji-termini-wrapper">
     <div class="d-flex">
       <button @click="goBack" class="btn-back">&larr;</button>
-            <h2 class="text-center">Moji Termini</h2>
-
+      <h2 class="text-center">Moji Termini</h2>
     </div>
     <div v-if="filteredTermini.length > 0" class="termini-list">
-      <div
-        v-for="termin in filteredTermini"
-        :key="termin.id"
-        class="termin-card"
-      >
+      <div v-for="termin in filteredTermini" :key="termin.id" class="termin-card">
         <div class="termin-info">
           <h3>{{ termin.name }}</h3>
           <p>{{ termin.location }}</p>
@@ -31,7 +26,8 @@
 </template>
 
 <script>
-import { db } from '@/firebase';
+import { db, auth } from '@/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import {
   collection,
   getDocs,
@@ -49,10 +45,22 @@ export default {
     };
   },
   created() {
-    this.fetchTermini();
+    this.initAuthState();
   },
   methods: {
+    initAuthState() {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          this.userId = user.uid;
+          this.fetchTermini();
+        } else {
+          this.userId = null;
+          this.filteredTermini = [];
+        }
+      });
+    },
     async fetchTermini() {
+      if (this.userId === null) return;
       const querySnapshot = await getDocs(collection(db, 'termini'));
       this.termini = [];
       querySnapshot.forEach((doc) => {
@@ -65,9 +73,7 @@ export default {
       this.filteredTermini = this.termini;
     },
     async otkaziSe(id) {
-      const terminIndex = this.filteredTermini.findIndex(
-        (termin) => termin.id === id
-      );
+      const terminIndex = this.filteredTermini.findIndex((termin) => termin.id === id);
       if (terminIndex !== -1) {
         const termin = this.filteredTermini[terminIndex];
         if (termin.prijavljeni && termin.prijavljeni.includes(this.userId)) {
@@ -89,7 +95,6 @@ export default {
 </script>
 
 <style scoped>
-
 .moji-termini-wrapper {
   padding: 20px;
 }

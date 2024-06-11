@@ -10,22 +10,27 @@
     </div>
     <div v-if="termini.length > 0" class="termini-list">
       <div v-for="termin in termini" :key="termin.id" class="termin-card">
-        <div class="termin-info">
+        <div class="termin-header">
           <h3>{{ termin.name }}</h3>
+          <button v-if="termin.userId === userId" @click="obrisiTermin(termin.id)" class="btn-delete">
+            🗑️
+          </button>
+        </div>
+        <div class="termin-info">
           <p>{{ termin.location }}</p>
           <p>{{ termin.startDate }} {{ termin.time }}</p>
           <p>Sport: {{ termin.sport }}</p>
           <p>Opis: {{ termin.opis }}</p>
           <p class="needed">Potrebno: {{ termin.slotsNeeded }}</p>
           <button
-            v-if="!isPrijavljen(termin.id) && termin.slotsNeeded > 0"
+            v-if="!termin.prijavljen && termin.slotsNeeded > 0"
             @click="prijaviSe(termin.id)"
             class="btn-prijava"
           >
             Prijava
           </button>
           <button
-            v-else-if="isPrijavljen(termin.id)"
+            v-else-if="termin.prijavljen"
             @click="otkaziSe(termin.id)"
             class="btn-otkazi"
           >
@@ -50,7 +55,8 @@
 </template>
 
 <script>
-import { db } from '@/firebase';
+import { db, auth } from '@/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import {
   collection,
   getDocs,
@@ -58,6 +64,7 @@ import {
   doc,
   arrayUnion,
   arrayRemove,
+  deleteDoc,
 } from 'firebase/firestore';
 
 export default {
@@ -68,17 +75,28 @@ export default {
     };
   },
   created() {
-    this.fetchTermini();
+    this.initAuthState();
   },
   methods: {
+    initAuthState() {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          this.userId = user.uid;
+          this.fetchTermini(); 
+        } else {
+          this.userId = null;
+          this.termini = [];
+        }
+      });
+    },
     async fetchTermini() {
+      if (this.userId === null) return; 
       const querySnapshot = await getDocs(collection(db, 'termini'));
       this.termini = [];
       querySnapshot.forEach((doc) => {
         const termin = doc.data();
         termin.id = doc.id;
-        termin.prijavljen =
-          termin.prijavljeni && termin.prijavljeni.includes(this.userId);
+        termin.prijavljen = termin.prijavljeni && termin.prijavljeni.includes(this.userId);
         this.termini.push(termin);
       });
     },
@@ -124,11 +142,16 @@ export default {
         }
       }
     },
+    async obrisiTermin(id) {
+      if (confirm('Jeste li sigurni da želite obrisati ovaj termin?')) {
+        await deleteDoc(doc(db, 'termini', id));
+        alert('Termin je obrisan.');
+        this.fetchTermini();
+      }
+    },
     isPrijavljen(id) {
       const termin = this.termini.find((t) => t.id === id);
-      return (
-        termin && termin.prijavljeni && termin.prijavljeni.includes(this.userId)
-      );
+      return termin && termin.prijavljeni && termin.prijavljeni.includes(this.userId);
     },
   },
   watch: {
@@ -268,5 +291,15 @@ export default {
   color: #fff;
   text-align: center;
   font-size: 16px;
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  color: red;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 10px;
 }
 </style>
