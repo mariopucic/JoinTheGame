@@ -185,6 +185,7 @@ export default {
 <style scoped>
 .header {
   text-align: center;
+  margin-top: 20px;
   margin-bottom: 30px;
   font-size: 28px;
   color: #2a2a2a;
@@ -225,6 +226,7 @@ export default {
   justify-content: center;
   overflow-y: auto;
   max-height: calc(100vh - 250px);
+  padding-bottom: 100px;
 }
 
 .termin-card {
@@ -311,14 +313,6 @@ export default {
 
 .btn-prijava:hover {
   background-color: #28a745;
-}
-
-.btn-otkazi {
-  background-color: #dc3545;
-}
-
-.btn-otkazi:hover {
-  background-color: #a7262d;
 }
 
 .no-termini {

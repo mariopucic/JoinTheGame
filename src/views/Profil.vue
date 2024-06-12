@@ -1,10 +1,12 @@
 <template>
     <div class="container profile-edit">
-       <div class="back">
-        <button @click="goBack" class="btn-back">&larr;</button>
-    </div>
-        <img src="@/assets/logo.png" alt="Logo" class="logo">
-        <h2 class="text-center">Postavi profil</h2>
+        <div class="header">
+            <button @click="goBack" class="btn-back">&larr;</button>
+            <div class="title-container">
+                <img src="@/assets/logo.png" alt="Logo" class="logo">
+                <h2 class="text-center">Postavi profil</h2>
+            </div>
+        </div>
         <form @submit.prevent="saveChanges" class="form-container">
             <div class="form-group mb-3">
                 <input type="text" v-model="name" class="form-control" placeholder="Ime" required />
@@ -109,7 +111,7 @@ export default {
 </script>
 
 <style scoped>
-.container.profile-edit{
+.container.profile-edit {
     padding: 20px;
     max-width: 500px;
     margin: 20px auto;
@@ -117,21 +119,54 @@ export default {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
     border-radius: 8px;
     background: #fff;
+    position: relative;
 }
-.btn-back{
-    font-size: 24px;
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    justify-content: space-between;
+    position: relative;
+}
+
+.btn-back {
+    font-size: 36px; 
+    font-weight: bold; 
     border: none;
     background: none;
     cursor: pointer;
     color: #28a745;
+    position: absolute;
+    left: 0;
 }
+
+.title-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 .logo {
     height: 50px;
+    margin-bottom: 10px;
+}
+
+.text-center {
+    color: #2a2a2a;
 }
 .profile-edit{
     max-width: 300px;
     margin: auto;
     text-align: center;
+}
+.form-container {
+    margin-top: 100px; 
 }
 .sports-container {
     display: flex;

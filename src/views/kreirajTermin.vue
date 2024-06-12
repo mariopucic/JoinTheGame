@@ -1,10 +1,13 @@
 <template>
   <div class="kreiraj-termin-container">
-    <div class="back">
-      <button @click="goBack" class="btn-back">&larr;</button>
-    </div>
-    <img src="@/assets/logo.png" alt="Logo" class="logo" />
-    <h2 class="text-center">Kreiraj termin</h2>
+    <div class="header">
+            <button @click="goBack" class="btn-back">&larr;</button>
+            <div class="title-container">
+                <img src="@/assets/logo.png" alt="Logo" class="logo">
+                <h2 class="text-center">Kreiraj termin</h2>
+            </div>
+        </div>
+        <form @submit.prevent="kreirajTermin">
     <div class="form-group mb-3">
       <input
         type="text"
@@ -101,6 +104,7 @@
       :disabled="!isFormValid">
       Kreiraj
     </button>
+  </form>
   </div>
 </template>
 
@@ -207,16 +211,43 @@ export default {
   background: #fff;
 }
 
+.header {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 100px;
+    justify-content: space-between;
+    position: relative;
+}
+
 .btn-back {
-  font-size: 24px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: #4a90e2;
+    font-size: 36px; 
+    font-weight: bold; 
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #28a745;
+    position: absolute;
+    left: 0;
+}
+
+.title-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .logo {
-  height: 60px;
+    height: 50px;
+    margin-bottom: 10px;
+}
+
+.text-center {
+    color: #2a2a2a;
 }
 
 .sport-buttons {

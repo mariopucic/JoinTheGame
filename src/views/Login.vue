@@ -1,7 +1,7 @@
 <template>
   <div class="container centered">
     <div class="text-center mb-4">
-      <img src="@/assets/logo.png" alt="Sports" class="logo" />
+      <img src="@/assets/glavni_logo.png" alt="Sports" class="logo" />
     </div>
     <h2>Dobro došli</h2>
     <form @submit.prevent="login" class="form-container">

@@ -1,7 +1,7 @@
 <template>
   <div class="container centered">
     <div class="text-center mb-4">
-      <img src="@/assets/logo.png" alt="Sports" class="logo" />
+      <img src="@/assets/glavni_logo.png" alt="Sports" class="logo" />
     </div>
     <h2>Dobro došli</h2>
     <form @submit.prevent="register" class="form-container">
@@ -68,7 +68,7 @@ export default {
         const result = await signInWithPopup(auth, googleProvider);
         const user = result.user;
         console.log('Logged in with Google:', user.displayName);
-        this.$router.push('/profile');
+        this.$router.push('/home');
       } catch (error) {
         console.error('Google sign-in error:', error);
         alert(error.message);

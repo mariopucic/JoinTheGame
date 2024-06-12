@@ -1,19 +1,27 @@
 <template>
   <div class="moji-termini-wrapper">
-    <div class="d-flex">
+    <div class="header">
       <button @click="goBack" class="btn-back">&larr;</button>
-      <h2 class="text-center">Moji Termini</h2>
+      <div class="title-container">
+        <img src="@/assets/logo.png" alt="Logo" class="logo">
+        <h2 class="text-center">Moji termini</h2>
+      </div>
     </div>
     <div v-if="filteredTermini.length > 0" class="termini-list">
-      <div v-for="termin in filteredTermini" :key="termin.id" class="termin-card">
-        <div class="termin-info">
+      <div v-for="termin in filteredTermini" :key="termin.id" class="termin-card position-relative" :style="getCardStyle(termin.sport)">
+        <div class="termin-header">
           <h3>{{ termin.name }}</h3>
-          <p>{{ termin.location }}</p>
-          <p>{{ termin.startDate }} {{ termin.time }}</p>
-          <p>Sport: {{ termin.sport }}</p>
-          <p>Opis: {{ termin.opis }}</p>
-          <p class="needed">Potrebno: {{ termin.slotsNeeded }}</p>
-          <button @click="otkaziSe(termin.id)" class="btn-otkazi">
+          <button v-if="termin.userId === userId" @click="obrisiTermin(termin.id)" class="btn-delete">
+            Izbriši
+          </button>
+        </div>
+        <div class="termin-info">
+          <p><strong>Lokacija:</strong> {{ termin.location }}</p>
+          <p><strong>Datum i vrijeme:</strong> {{ termin.startDate }} {{ termin.time }}</p>
+          <p><strong>Sport:</strong> {{ termin.sport }}</p>
+          <p><strong>Opis:</strong> {{ termin.opis }}</p>
+          <p class="needed"><strong>Potrebno:</strong> {{ termin.slotsNeeded }}</p>
+          <button @click="otkaziSe(termin.id)" class="btn btn-warning">
             Otkaži
           </button>
         </div>
@@ -28,13 +36,7 @@
 <script>
 import { db, auth } from '@/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import {
-  collection,
-  getDocs,
-  updateDoc,
-  doc,
-  arrayRemove,
-} from 'firebase/firestore';
+import { collection, getDocs, updateDoc, doc, arrayRemove, deleteDoc } from 'firebase/firestore';
 
 export default {
   data() {
@@ -66,7 +68,7 @@ export default {
       querySnapshot.forEach((doc) => {
         const termin = doc.data();
         termin.id = doc.id;
-        if (termin.prijavljeni && termin.prijavljeni.includes(this.userId)) {
+        if (termin.userId === this.userId || (termin.prijavljeni && termin.prijavljeni.includes(this.userId))) {
           this.termini.push(termin);
         }
       });
@@ -87,31 +89,86 @@ export default {
         }
       }
     },
+    async obrisiTermin(id) {
+      if (confirm('Jeste li sigurni da želite obrisati ovaj termin?')) {
+        try {
+          await deleteDoc(doc(db, 'termini', id));
+          this.filteredTermini = this.filteredTermini.filter((termin) => termin.id !== id);
+          alert('Termin je uspješno obrisan.');
+        } catch (error) {
+          alert('Greška pri brisanju termina: ' + error.message);
+        }
+      }
+    },
     goBack() {
       this.$router.push('/home');
+    },
+    getCardStyle(sport) {
+      if (sport === 'kosarka') {
+        return {
+          backgroundImage: `url(${require('@/assets/basketball.jpg')})`,
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+        };
+      } else if (sport === 'nogomet') {
+        return {
+          backgroundImage: `url(${require('@/assets/football.jpg')})`,
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+        };
+      }
+      return {};
     },
   },
 };
 </script>
 
 <style scoped>
-.moji-termini-wrapper {
-  padding: 20px;
-}
 
 .header {
   text-align: center;
-  margin-bottom: 30px;
-  color: #333;
-  font-size: 24px;
+  margin-top: 20px;
+  margin-bottom: 125px;
+  font-size: 28px;
+  color: #2a2a2a;
 }
 
 .btn-back {
-  font-size: 24px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: green;
+    font-size: 36px; 
+    font-weight: bold; 
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #28a745;
+    position: absolute;
+    left: 500px;
+
+}
+
+.title-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.logo {
+    height: 50px;
+    margin-bottom: 10px;
+}
+
+.text-center {
+    color: #2a2a2a;
+}
+
+
+.moji-termini-wrapper {
+  padding: 20px;
 }
 
 .termini-list {
@@ -120,10 +177,12 @@ export default {
   gap: 30px;
   padding: 20px;
   justify-content: center;
+  overflow-y: auto;
+  max-height: calc(100vh - 250px);
 }
 
 .termin-card {
-  background-color: #f9f9f9;
+  background-color: rgba(255, 255, 255, 0.8);
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 20px;
@@ -132,6 +191,10 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  background-blend-mode: lighten;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .termin-card:hover {
@@ -139,20 +202,54 @@ export default {
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
 }
 
-.termin-info h3 {
-  color: #2a2a2a;
-  font-weight: 600;
+.termin-header {
+  position: relative;
+}
+
+.termin-header h3 {
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-delete {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 3px;
+  cursor: pointer;
 }
 
 .termin-info p {
   color: #666;
-  line-height: 1.6;
   margin: 5px 0;
+  line-height: 1.5;
+}
+
+.termin-info p strong {
+  color: #333;
 }
 
 .termin-info .needed {
   color: #e53e3e;
-  font-weight: 500;
+  font-weight: bold;
+}
+
+.btn-otkazi {
+  padding: 10px 20px;
+  border-radius: 6px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+ 
 }
 
 .no-termini {
@@ -160,19 +257,5 @@ export default {
   margin-top: 50px;
   color: #666;
   font-size: 18px;
-}
-
-.btn-otkazi {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.btn-otkazi:hover {
-  background-color: #b72a2a;
 }
 </style>
