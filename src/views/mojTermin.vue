@@ -126,46 +126,39 @@ export default {
 </script>
 
 <style scoped>
-
 .header {
-  text-align: center;
-  margin-top: 20px;
-  margin-bottom: 125px;
-  font-size: 28px;
-  color: #2a2a2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  position: relative;
 }
 
 .btn-back {
-    font-size: 36px; 
-    font-weight: bold; 
-    border: none;
-    background: none;
-    cursor: pointer;
-    color: #28a745;
-    position: absolute;
-    left: 500px;
-
+  font-size: 36px;
+  font-weight: bold;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #28a745;
+  margin-right: 350px; 
+  position: absolute;
 }
 
 .title-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0 auto;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .logo {
-    height: 50px;
-    margin-bottom: 10px;
+  height: 60px;
+  margin-bottom: 10px;
 }
 
 .text-center {
-    color: #2a2a2a;
+  color: #2a2a2a;
 }
-
 
 .moji-termini-wrapper {
   padding: 20px;
@@ -249,7 +242,11 @@ export default {
   cursor: pointer;
   transition: background-color 0.3s;
   margin-top: 10px;
- 
+  background-color: #dc3545;
+}
+
+.btn-otkazi:hover {
+  background-color: #b72a2a;
 }
 
 .no-termini {

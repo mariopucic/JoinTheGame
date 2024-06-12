@@ -125,7 +125,7 @@ export default {
 .header {
     display: flex;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 30px;
     margin-bottom: 20px;
     justify-content: space-between;
     position: relative;
@@ -153,7 +153,7 @@ export default {
 }
 
 .logo {
-    height: 50px;
+    height: 60px;
     margin-bottom: 10px;
 }
 
